@@ -24,6 +24,22 @@
 .DS_Store
 *.pem
 
+# android-app
+android-app/node_modules/
+android-app/.expo/
+android-app/.expo-shared/
+android-app/dist/
+android-app/.DS_Store
+android-app/.env
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+
 # debug
 npm-debug.log*
 yarn-debug.log*
