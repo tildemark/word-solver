@@ -6,16 +6,15 @@ export function useDictionary() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/dictionary.txt')
-      .then((res) => res.text())
-      .then((text) => {
-        // Split by new line and remove empty strings
-        const list = text.split('\n').map(w => w.trim()).filter(w => w.length > 0);
+    fetch('/api/dictionary')
+      .then((res) => res.json())
+      .then((data) => {
+        const list = (data?.dictionary || []).map((w: string) => w.trim()).filter((w: string) => w.length > 0);
         setWords(list);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Failed to load dictionary", err);
+        console.error('Failed to load dictionary', err);
         setLoading(false);
       });
   }, []);

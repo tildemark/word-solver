@@ -14,6 +14,8 @@ export default function SolverPage() {
   const [mustContain, setMustContain] = useState('');
   const [mustExclude, setMustExclude] = useState('');
   const [resultsToShow, setResultsToShow] = useState(100);
+  const [submitWord, setSubmitWord] = useState('');
+  const [submitStatus, setSubmitStatus] = useState<{ type: 'idle' | 'ok' | 'pending' | 'error'; message?: string }>({ type: 'idle' });
 
   // Run solver automatically whenever inputs change
   // useMemo prevents re-running if nothing changed
@@ -31,6 +33,35 @@ export default function SolverPage() {
   React.useEffect(() => {
     setResultsToShow(100);
   }, [results]);
+
+  async function handleSubmit(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    const w = submitWord.trim();
+    if (!/^[a-zA-Z]+$/.test(w)) {
+      setSubmitStatus({ type: 'error', message: 'Only letters allowed' });
+      return;
+    }
+    setSubmitStatus({ type: 'idle' });
+    try {
+      const res = await fetch('/api/submit-word', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ word: w }),
+      });
+      const data = await res.json();
+      if (res.status === 200) {
+        setSubmitStatus({ type: 'ok', message: `${data.word} added to dictionary` });
+        setSubmitWord('');
+      } else if (res.status === 202) {
+        setSubmitStatus({ type: 'pending', message: 'Submitted for manual approval' });
+        setSubmitWord('');
+      } else {
+        setSubmitStatus({ type: 'error', message: data.error || 'Server error' });
+      }
+    } catch (err) {
+      setSubmitStatus({ type: 'error', message: 'Network or server error' });
+    }
+  }
 
   return (
     <main className="min-h-screen bg-slate-900 text-slate-100 p-6 flex flex-col items-center">
@@ -134,6 +165,30 @@ export default function SolverPage() {
              </div>
           )}
         </div>
+        {/* Submission Panel */}
+        <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700 space-y-4">
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              value={submitWord}
+              onChange={(e) => setSubmitWord(e.target.value)}
+              placeholder="Suggest a word"
+              className="flex-1 bg-slate-900 border border-slate-600 rounded-lg py-2 px-3 outline-none uppercase"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors text-sm font-semibold"
+            >
+              Submit
+            </button>
+          </div>
+          <div>
+            {submitStatus.type === 'ok' && <p className="text-sm text-emerald-300">{submitStatus.message}</p>}
+            {submitStatus.type === 'pending' && <p className="text-sm text-yellow-300">{submitStatus.message}</p>}
+            {submitStatus.type === 'error' && <p className="text-sm text-red-400">{submitStatus.message}</p>}
+          </div>
+          <p className="text-xs text-slate-500">Submitted words are verified automatically when possible; otherwise they go into a pending queue for approval.</p>
+        </form>
       </div>
     </main>
   );
