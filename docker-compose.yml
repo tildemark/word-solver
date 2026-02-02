@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  word-solver:
+    build: .
+    container_name: word-solver
+    environment:
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-changeme}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secret-here}
+      - NEXTAUTH_URL=https://solver.sanchez.ph
+    volumes:
+      - ./data:/app/data
+    networks:
+      - net
+    restart: unless-stopped
+    labels:
+      - com.example.description="Word Solver App"
+
+networks:
+  net:
+    external: true

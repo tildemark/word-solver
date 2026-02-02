@@ -49,6 +49,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# sensitive data files
+/data/admin.json
+/cookies.txt
+
 # vercel
 .vercel
 

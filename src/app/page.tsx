@@ -5,6 +5,7 @@
 import React, { useState, useMemo } from 'react';
 import { useDictionary } from '@/hooks/useDictionary';
 import { universalSolver } from '@/lib/solver';
+import { WordSolverBanner } from '@/components/WordSolverBanner';
 
 
 export default function SolverPage() {
@@ -68,7 +69,7 @@ export default function SolverPage() {
       <div className="max-w-xl w-full space-y-8">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-emerald-400">Word Solver</h1>
+          <WordSolverBanner />
           <p className="text-slate-400 text-sm">
             {loading ? "Loading Dictionary..." : `Loaded ${words.length.toLocaleString()} words`}
           </p>
