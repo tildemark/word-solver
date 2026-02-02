@@ -11,9 +11,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const session = await getServerSession(req, res, authOptions as any);
   let authorized = false;
-  if (session && ((session as any).role === 'admin' || (session.user as any)?.role === 'admin')) {
+  if (session && ((session as any).role === 'admin' || (session as any).user?.role === 'admin')) {
     authorized = true;
-  } else if (session && ((session.user as any)?.id === 'admin' || (session.user as any)?.name === 'Admin')) {
+  } else if (session && ((session as any).user?.id === 'admin' || (session as any).user?.name === 'Admin')) {
     // fallback: some sessions may not include role; treat known admin user as admin
     authorized = true;
   } else {
@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
   const sessionPresent = !!session;
-  const sessionRole = (session as any)?.role || (session?.user as any)?.role || null;
+  const sessionRole = (session as any)?.role || (session as any)?.user?.role || null;
   const providedHeader = (req.headers['x-admin-token'] || req.headers['authorization']) as string | undefined;
   let adminJsonPresent = false;
   try {
